@@ -193,34 +193,43 @@ random_uniform(Range) ->
 
 -ifdef(gen_statem_module).
 cancel_timer(Timer) ->
-    erlang:cancel_timer(Timer).
+    %% copy from gen_fsm.erl
+    case erlang:cancel_timer(Ref) of
+        false ->
+            receive {timeout, Ref, _} -> 0
+            after 0 -> false
+            end;
+        RemainingTime ->
+            RemainingTime
+    end.
 
 reply(From, Reply) ->
     gen_statem:reply(From, Reply).
 
-send_all_state_event(Pid, Msg) ->
-    gen_statem:call(Pid, Msg).
+send_all_state_event(FsmRef, Event) ->
+    gen_statem:call(FsmRef, Event).
 
-send_event(Target, Msg) ->
-    gen_statem:cast(Target, Msg).
+send_event(FsmRef, Event) ->
+    gen_statem:cast(FsmRef, Event).
 
-sync_send_event(Target, Msg, Timeout) ->
-    gen_statem:call(Target, Msg, Timeout).
+sync_send_event(FsmRef, Event, Timeout) ->
+    gen_statem:call(FsmRef, Event, Timeout).
 
-send_event_after(_Time, _Event) ->
-    ok.
+send_event_after(Time, Event) ->
+    %% copy from gen_fsm.erl
+    erlang:start_timer(Time, self(), {'$gen_event', Event}).
 
-start(Mudule, Args, Args) ->
-    gen_statem:start(Mudule, Args, Args).
+start(Target, Msg, Timeout) ->
+    gen_statem:start(Target, Msg, Timeout).
 
-start_link(Mudule, Args, Args) ->
-    gen_statm:start_link(Mudule, Args, Args).
+start_link(Module, Args, Options) ->
+    gen_statm:start_link(Module, Args, Options).
 
-sync_send_all_state_event(Target, Msg) ->
-    gen_statem:call(Target, Msg).
+sync_send_all_state_event(FsmRef, Event) ->
+    gen_statem:call(FsmRef, Event).
 
-sync_send_all_state_event(Target, Msg, Timeout) ->
-    gen_statem:call(Target, Msg, Timeout).
+sync_send_all_state_event(FsmRef, Event, Timeout) ->
+    gen_statem:call(FsmRef, Event, Timeout)).
 
 -else.
 
@@ -230,28 +239,28 @@ cancel_timer(Timer) ->
 reply(From, Reply) ->
     gen_fsm:reply(From, Reply).
 
-send_event(Target, Msg) ->
-    gen_fsm:send_event(Target, Msg).
+send_event(FsmRef, Event) ->
+    gen_fsm:send_event(FsmRef, Event).
 
-send_all_state_event(Pid, Msg) ->
-    gen_fsm:send_all_state_event(Pid, Msg).
+send_all_state_event(FsmRef, Event) ->
+    gen_fsm:send_all_state_event(FsmRef, Event).
 
 send_event_after(Time, Event) ->
     gen_fsm:send_event_after(Time, Event).
 
-sync_send_event(Target, Msg, Timeout) ->
-    gen_fsm:sync_send_event(Target, Msg, Timeout).
+sync_send_event(FsmRef, Event, Timeout) ->
+    gen_fsm:sync_send_event(FsmRef, Event, Timeout).
 
-start(Mudule, Args, Args) ->
-    gen_fsm:start(Mudule, Args, Args).
+start(Module, Args, Options) ->
+    gen_fsm:start(Module, Args, Options).
 
-start_link(Mudule, Args, Args) ->
-    gen_fsm:start_link(Mudule, Args, Args).
+start_link(Module, Args, Options) ->
+    gen_fsm:start_link(Module, Args, Options).
 
-sync_send_all_state_event(Target, Msg) ->
-    gen_fsm:sync_send_all_state_event(Target, Msg).
+sync_send_all_state_event(FsmRef, Event) ->
+    gen_fsm:sync_send_all_state_event(FsmRef, Event).
 
-sync_send_all_state_event(Target, Msg, Timeout) ->
-    gen_fsm:sync_send_all_state_event(Target, Msg, Timeout).
+sync_send_all_state_event(FsmRef, Event, Timeout) ->
+    gen_fsm:sync_send_all_state_event(FsmRef, Event, Timeout).
 
 -endif.
