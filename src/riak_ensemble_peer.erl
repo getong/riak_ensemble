@@ -152,9 +152,20 @@
 
 -type state() :: #state{}.
 
+-ifdef(gen_statem_module).
+-export([
+         callback_mode/0
+         ]).
+-endif.
+
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+-ifdef(gen_statem_module).
+callback_mode() -> state_functions.
+-endif.
+
 
 -spec start_link(module(), ensemble_id(), peer_id(), [any()])
                 -> ignore | {error, _} | {ok, pid()}.

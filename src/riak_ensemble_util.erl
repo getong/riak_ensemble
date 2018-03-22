@@ -192,7 +192,7 @@ random_uniform(Range) ->
 
 
 -ifdef(gen_statem_module).
-cancel_timer(Timer) ->
+cancel_timer(Ref) ->
     %% copy from gen_fsm.erl
     case erlang:cancel_timer(Ref) of
         false ->
@@ -229,7 +229,7 @@ sync_send_all_state_event(FsmRef, Event) ->
     gen_statem:call(FsmRef, Event).
 
 sync_send_all_state_event(FsmRef, Event, Timeout) ->
-    gen_statem:call(FsmRef, Event, Timeout)).
+    gen_statem:call(FsmRef, Event, Timeout).
 
 -else.
 
