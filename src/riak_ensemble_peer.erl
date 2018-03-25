@@ -164,6 +164,178 @@
 
 -ifdef(gen_statem_module).
 callback_mode() -> state_functions.
+
+setup({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, setup, State) of
+        %% common(Msg, From, State, setup).
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+setup(cast, Msg, State) ->
+    setup(Msg, State);
+setup(info, Msg, State) ->
+    handle_info(Msg, setup, State);
+setup(_, Msg, State) ->
+    handle_info(Msg, setup, State).
+
+probe({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, probe, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+probe(cast, Msg, State) ->
+    probe(Msg, State);
+probe(info, Msg, State) ->
+    handle_info(Msg, probe, State);
+probe(_, Msg, State) ->
+    handle_info(Msg, probe, State).
+
+
+election({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, election, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+election(cast, Msg, State) ->
+    election(Msg, State);
+election(info, Msg, State) ->
+    handle_info(Msg, election, State);
+election(_, Msg, State) ->
+    handle_info(Msg, election, State).
+
+
+prepare({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, prepare, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+prepare(cast, Msg, State) ->
+    prepare(Msg, State);
+prepare(info, Msg, State) ->
+    handle_info(Msg, prepare, State);
+prepare(_, Msg, State) ->
+    handle_info(Msg, prepare, State).
+
+leading({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, leading, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+leading(cast, Msg, State) ->
+    leading(Msg, State);
+leading(info, Msg, State) ->
+    handle_info(Msg, leading, State);
+leading(_, Msg, State) ->
+    handle_info(Msg, leading, State).
+
+
+following({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, following, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+following(cast, Msg, State) ->
+    following(Msg, State);
+following(info, Msg, State) ->
+    handle_info(Msg, following, State);
+following(_, Msg, State) ->
+    handle_info(Msg, following, State).
+
+pending({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, pending, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+pending(cast, Msg, State) ->
+    pending(Msg, State);
+pending(info, Msg, State) ->
+    handle_info(Msg, pending, State);
+pending(_, Msg, State) ->
+    handle_info(Msg, pending, State).
+
+prelead({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, prelead, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+prelead(cast, Msg, State) ->
+    prelead(Msg, State);
+prelead(info, Msg, State) ->
+    handle_info(Msg, prelead, State);
+prelead(_, Msg, State) ->
+    handle_info(Msg, prelead, State).
+
+%%prelead({call, From}, Msg, State) ->
+%%    case handle_sync_event(From, Msg, prelead, State) of
+%%        {_, _, _} = Result ->
+%%            Result;
+%%        {reply, Reply, StateName, NewState} ->
+%%            {next_state, StateName, NewState, [{reply, From, Reply}]}
+%%    end;
+%%prelead(cast, Msg, State) ->
+%%    prelead(Msg, State);
+%%prelead(info, Msg, State) ->
+%%    handle_info(Msg, prelead, State);
+%%prelead(_, Msg, State) ->
+%%    handle_info(Msg, prelead, State).
+
+prefollow({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, prefollow, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+prefollow(cast, Msg, State) ->
+    prefollow(Msg, State);
+prefollow(info, Msg, State) ->
+    handle_info(Msg, prefollow, State);
+prefollow(_, Msg, State) ->
+    handle_info(Msg, prefollow, State).
+
+repair({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, repair, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+repair(cast, Msg, State) ->
+    repair(Msg, State);
+repair(info, Msg, State) ->
+    handle_info(Msg, repair, State);
+repair(_, Msg, State) ->
+    handle_info(Msg, repair, State).
+
+exchange({call, From}, Msg, State) ->
+    case handle_sync_event(From, Msg, exchange, State) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
+exchange(cast, Msg, State) ->
+    exchange(Msg, State);
+exchange(info, Msg, State) ->
+    handle_info(Msg, exchange, State);
+exchange(_, Msg, State) ->
+    handle_info(Msg, exchange, State).
 -endif.
 
 
@@ -404,9 +576,11 @@ probe(probe_continue, State) ->
 probe(Msg, State) ->
     common(Msg, State, probe).
 
+-ifndef(gen_statem_module).
 -spec probe(_, fsm_from(), state()) -> {next_state, probe, state()}.
 probe(Msg, From, State) ->
     common(Msg, From, State, probe).
+-endif.
 
 pending(init, State) ->
     lager:debug("~p: pending init", [State#state.id]),
@@ -445,8 +619,10 @@ pending({commit, NewFact, From}, State) ->
 pending(Msg, State) ->
     common(Msg, State, pending).
 
+-ifndef(gen_statem_module).
 pending(Msg, From, State) ->
     common(Msg, From, State, pending).
+-endif.
 
 maybe_follow(_, State=#state{tree_trust=false}) ->
     %% This peer is untrusted and must perform an exchange
@@ -472,9 +648,11 @@ repair(repair_complete, State) ->
 repair(Msg, State) ->
     common(Msg, State, repair).
 
+-ifndef(gen_statem_module).
 -spec repair(_, fsm_from(), state()) -> {next_state, repair, state()}.
 repair(Msg, From, State) ->
     common(Msg, From, State, repair).
+-endif.
 
 %%%===================================================================
 
@@ -489,11 +667,13 @@ exchange(exchange_failed, State) ->
 exchange(Msg, State) ->
     common(Msg, State, exchange).
 
+-ifndef(gen_statem_module).
 exchange(tree_corrupted, From, State) ->
     riak_ensemble_util:reply(From, ok),
     repair(init, State);
 exchange(Msg, From, State) ->
     common(Msg, From, State, exchange).
+-endif.
 
 %%%===================================================================
 
@@ -549,9 +729,11 @@ election({commit, NewFact, From}, State) ->
 election(Msg, State) ->
     common(Msg, State, election).
 
+-ifndef(gen_statem_module).
 -spec election(_, fsm_from(), state()) -> {next_state, election, state()}.
 election(Msg, From, State) ->
     common(Msg, From, State, election).
+-endif.
 
 prefollow({init, Id, NextEpoch}, State) ->
     Prelim = {Id, NextEpoch},
@@ -589,8 +771,10 @@ prefollow(prefollow_timeout, State) ->
 prefollow(Msg, State) ->
     common(Msg, State, prefollow).
 
+-ifndef(gen_statem_module).
 prefollow(Msg, From, State) ->
     common(Msg, From, State, prefollow).
+-endif.
 
 -spec prepare(_, state()) -> next_state().
 prepare(init, State=#state{id=Id}) ->
@@ -618,9 +802,12 @@ prepare({timeout, _Replies}, State) ->
 prepare(Msg, State) ->
     common(Msg, State, prepare).
 
+
+-ifndef(gen_statem_module).
 -spec prepare(_, fsm_from(), state()) -> {next_state, prepare, state()}.
 prepare(Msg, From, State) ->
     common(Msg, From, State, prepare).
+-endif.
 
 prelead(init, State=#state{id=Id, preliminary=Prelim}) ->
     {Id, NextEpoch} = Prelim,
@@ -639,8 +826,10 @@ prelead({timeout, _Replies}, State) ->
 prelead(Msg, State) ->
     common(Msg, State, prelead).
 
+-ifndef(gen_statem_module).
 prelead(Msg, From, State) ->
     common(Msg, From, State, prelead).
+-endif.
 
 -spec leading(_, state()) -> next_state().
 leading(init, State=#state{id=_Id, watchers=Watchers}) ->
@@ -667,6 +856,7 @@ leading({forward, From, Msg}, State) ->
 leading(Msg, State) ->
     common(Msg, State, leading).
 
+-ifndef(gen_statem_module).
 -spec leading(_, fsm_from(), state()) -> sync_next_state().
 leading({update_members, Changes}, From, State=#state{fact=Fact,
                                                       members=Members}) ->
@@ -735,6 +925,7 @@ leading(Msg, From, State) ->
         Return ->
             Return
     end.
+-endif.
 
 -spec change_pending(views(), state()) -> fact().
 change_pending(Views, #state{fact=Fact}) ->
@@ -866,6 +1057,7 @@ following(Msg, State) ->
             Return
     end.
 
+-ifndef(gen_statem_module).
 -spec following(_, fsm_from(), state()) -> {next_state, following, state()}.
 following({join, _Id}=Msg, From, State) ->
     forward(Msg, From, State);
@@ -876,6 +1068,7 @@ following(Msg, From, State) ->
         Return ->
             Return
     end.
+-endif.
 
 -spec forward(_, fsm_from(), state()) -> {next_state, following, state()}.
 forward(Msg, From, State) ->
