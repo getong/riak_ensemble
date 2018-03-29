@@ -165,9 +165,15 @@
 -ifdef(gen_statem_module).
 callback_mode() -> state_functions.
 
+setup({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, setup) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 setup({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, setup, State) of
-        %% common(Msg, From, State, setup).
         {_, _, _} = Result ->
             Result;
         {reply, Reply, StateName, NewState} ->
@@ -180,6 +186,13 @@ setup(info, Msg, State) ->
 setup(_, Msg, State) ->
     handle_info(Msg, setup, State).
 
+probe({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, probe) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 probe({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, probe, State) of
         {_, _, _} = Result ->
@@ -195,6 +208,13 @@ probe(_, Msg, State) ->
     handle_info(Msg, probe, State).
 
 
+election({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, election) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 election({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, election, State) of
         {_, _, _} = Result ->
@@ -209,7 +229,13 @@ election(info, Msg, State) ->
 election(_, Msg, State) ->
     handle_info(Msg, election, State).
 
-
+prepare({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, prepare) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 prepare({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, prepare, State) of
         {_, _, _} = Result ->
@@ -224,6 +250,13 @@ prepare(info, Msg, State) ->
 prepare(_, Msg, State) ->
     handle_info(Msg, prepare, State).
 
+leading({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, leading) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 leading({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, leading, State) of
         {_, _, _} = Result ->
@@ -238,7 +271,13 @@ leading(info, Msg, State) ->
 leading(_, Msg, State) ->
     handle_info(Msg, leading, State).
 
-
+following({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, following) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 following({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, following, State) of
         {_, _, _} = Result ->
@@ -253,6 +292,13 @@ following(info, Msg, State) ->
 following(_, Msg, State) ->
     handle_info(Msg, following, State).
 
+pending({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, pending) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 pending({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, pending, State) of
         {_, _, _} = Result ->
@@ -267,6 +313,13 @@ pending(info, Msg, State) ->
 pending(_, Msg, State) ->
     handle_info(Msg, pending, State).
 
+prelead({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, prelead) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 prelead({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, prelead, State) of
         {_, _, _} = Result ->
@@ -281,6 +334,13 @@ prelead(info, Msg, State) ->
 prelead(_, Msg, State) ->
     handle_info(Msg, prelead, State).
 
+prefollow({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, prefollow) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 prefollow({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, prefollow, State) of
         {_, _, _} = Result ->
@@ -295,6 +355,13 @@ prefollow(info, Msg, State) ->
 prefollow(_, Msg, State) ->
     handle_info(Msg, prefollow, State).
 
+repair({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, repair) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 repair({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, repair, State) of
         {_, _, _} = Result ->
@@ -309,6 +376,13 @@ repair(info, Msg, State) ->
 repair(_, Msg, State) ->
     handle_info(Msg, repair, State).
 
+exchange({call, From}, {sync_event_msg, Msg}, State) ->
+    case common(Msg, From, State, exchange) of
+        {_, _, _} = Result ->
+            Result;
+        {reply, Reply, StateName, NewState} ->
+            {next_state, StateName, NewState, [{reply, From, Reply}]}
+    end;
 exchange({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, exchange, State) of
         {_, _, _} = Result ->

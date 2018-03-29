@@ -226,10 +226,10 @@ start_link(Module, Args, Options) ->
     gen_statm:start_link(Module, Args, Options).
 
 sync_send_all_state_event(FsmRef, Event) ->
-    gen_statem:call(FsmRef, Event).
+    gen_statem:call(FsmRef, {sync_event_msg, Event}).
 
 sync_send_all_state_event(FsmRef, Event, Timeout) ->
-    gen_statem:call(FsmRef, Event, Timeout).
+    gen_statem:call(FsmRef, {sync_event_msg, Event}, Timeout).
 
 -else.
 
