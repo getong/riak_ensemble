@@ -18,7 +18,17 @@
 %%
 %% -------------------------------------------------------------------
 -module(riak_ensemble_exchange).
--compile(export_all).
+%% -compile(export_all).
+
+-export([
+         start_exchange/7,
+         perform_exchange/7,
+         perform_exchange2/5,
+         exchange/5,
+         exchange_get/4,
+         trust_majority/4,
+         all_trust_majority/3
+        ]).
 
 start_exchange(Ensemble, Peer, Id, Tree, Peers, Views, Trusted) ->
     spawn(fun() ->

@@ -43,13 +43,28 @@
 %% This isolation is provided by spawning an intermediary proxy process.
 
 -module(riak_ensemble_router).
--compile(export_all).
+%% -compile(export_all).
 -behaviour(gen_server).
 
 -include_lib("riak_ensemble_types.hrl").
 
 %% API
--export([start_link/1]).
+-export([
+         start_link/1,
+         sync_send_event/3,
+         sync_send_event/4,
+         sync_proxy/6,
+         sync_proxy_direct/5,
+         sync_proxy_router/6,
+         cast/2,
+         cast/3,
+         noconnect_cast/2,
+         routers/0,
+         random/1,
+         ensemble_cast/2,
+         handle_ensemble_cast/2,
+         fail_cast/1
+        ]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
