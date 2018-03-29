@@ -281,20 +281,6 @@ prelead(info, Msg, State) ->
 prelead(_, Msg, State) ->
     handle_info(Msg, prelead, State).
 
-%%prelead({call, From}, Msg, State) ->
-%%    case handle_sync_event(From, Msg, prelead, State) of
-%%        {_, _, _} = Result ->
-%%            Result;
-%%        {reply, Reply, StateName, NewState} ->
-%%            {next_state, StateName, NewState, [{reply, From, Reply}]}
-%%    end;
-%%prelead(cast, Msg, State) ->
-%%    prelead(Msg, State);
-%%prelead(info, Msg, State) ->
-%%    handle_info(Msg, prelead, State);
-%%prelead(_, Msg, State) ->
-%%    handle_info(Msg, prelead, State).
-
 prefollow({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, prefollow, State) of
         {_, _, _} = Result ->
