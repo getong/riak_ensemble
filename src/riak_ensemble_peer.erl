@@ -35,7 +35,11 @@
 -export([join/2, join/3, update_members/3, get_leader/1, backend_pong/1]).
 -export([kget/4, kget/5, kupdate/6, kput_once/5, kover/5, kmodify/6, kdelete/4,
          ksafe_delete/5, obj_value/2, obj_value/3]).
+-ifdef(gen_statem_module).
+-export([setup/3]).
+-else.
 -export([setup/2]).
+-endif.
 -export([probe/2, election/2, prepare/2, leading/2, following/2,
          probe/3, election/3, prepare/3, leading/3, following/3]).
 -export([pending/2, prelead/2, prefollow/2,
@@ -110,9 +114,11 @@
 -type next_state()      :: {next_state, atom(), state()} |
                            {stop,normal,state()}.
 
+-ifndef(gen_statem_module).
 -type sync_next_state() :: {reply, term(), atom(), state()} |
                            {next_state, atom(), state()} |
                            {stop, normal, state()}.
+-endif.
 
 -type fsm_from()        :: {_,_}.
 
@@ -250,13 +256,75 @@ prepare(info, Msg, State) ->
 prepare(_, Msg, State) ->
     handle_info(Msg, prepare, State).
 
-leading({call, From}, {sync_event_msg, Msg}, State) ->
-    case common(Msg, From, State, leading) of
-        {_, _, _} = Result ->
-            Result;
-        {reply, Reply, StateName, NewState} ->
-            {next_state, StateName, NewState, [{reply, From, Reply}]}
+leading({call, From}, {sync_event_msg, {update_members, Changes}}, State=#state{fact=Fact,
+                                                                               members=Members}) ->
+    Cluster = riak_ensemble_manager:cluster(),
+    Views = Fact#fact.views,
+    case update_view(Changes, Members, hd(Views), Cluster) of
+        {[], NewView} ->
+            Views2 = [NewView|Views],
+            NewFact = change_pending(Views2, State),
+            case try_commit(NewFact, State) of
+                {ok, State2} ->
+                    {next_state, leading, State2, [{reply, From, ok}]};
+                {failed, State2} ->
+                    send_reply(From, timeout),
+                    step_down(State2)
+            end;
+        {Errors, _NewView} ->
+            {next_state, leading, State, [{reply, From, {error, Errors}}]}
     end;
+leading({call, From}, {sync_event_msg, check_quorum}, State) ->
+    case try_commit(State#state.fact, State) of
+        {ok, State2} ->
+            {next_state, leading, State2, [{reply, From, ok}]};
+        {failed, State2} ->
+            send_reply(From, timeout),
+            step_down(State2)
+    end;
+leading({call, From}, {sync_event_msg, ping_quorum}, State =#state{fact=Fact, id=Id, members=Members,
+                                                 tree_ready=TreeReady} ) ->
+    NewFact = increment_sequence(Fact),
+    State2 = local_commit(NewFact, State),
+    {Future, State3} = blocking_send_all({commit, NewFact}, State2),
+    Extra = case lists:member(Id, Members) of
+                true  -> [{Id,ok}];
+                false -> []
+            end,
+    spawn_link(fun() ->
+                       %% TODO: Should this be hardcoded?
+                       timer:sleep(1000),
+                       Result = case wait_for_quorum(Future) of
+                                    {quorum_met, Replies} ->
+                                        %% io:format("met: ~p~n", [Replies]),
+                                        Extra ++ Replies;
+                                    {timeout, _Replies} ->
+                                        %% io:format("timeout~n"),
+                                        Extra
+                                end,
+                       riak_ensemble_util:reply(From, {Id, TreeReady, Result})
+               end),
+    {next_state, leading, State3};
+leading({call, _From}, {sync_event_msg, stable_views}, State=#state{fact=Fact}) ->
+    #fact{pending=Pending, views=Views} = Fact,
+    Reply = case {Pending, Views} of
+                {undefined, [_]} ->
+                    {ok, true};
+                {{_, []}, [_]} ->
+                    {ok, true};
+                _ ->
+                    {ok, false}
+            end,
+    {reply, Reply, leading, State};
+
+leading({call, From}, {sync_event_msg, Msg}, State) ->
+    case leading_kv(Msg, From, State) of
+        false ->
+            common(Msg, From, State, leading);
+        Return ->
+            Return
+    end;
+
 leading({call, From}, Msg, State) ->
     case handle_sync_event(From, Msg, leading, State) of
         {_, _, _} = Result ->
