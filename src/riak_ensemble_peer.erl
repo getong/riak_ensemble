@@ -206,6 +206,8 @@ probe({call, From}, Msg, State) ->
         {reply, Reply, StateName, NewState} ->
             {next_state, StateName, NewState, [{reply, From, Reply}]}
     end;
+probe(cast, {send_event_msg, Msg}, State) ->
+    handle_event(Msg, probe, State);
 probe(cast, Msg, State) ->
     probe(Msg, State);
 probe(info, Msg, State) ->
